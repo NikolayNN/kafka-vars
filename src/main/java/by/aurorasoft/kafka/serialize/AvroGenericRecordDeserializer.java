@@ -6,13 +6,20 @@ import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.io.DatumReader;
 import org.apache.avro.io.Decoder;
 import org.apache.avro.io.DecoderFactory;
+import org.apache.avro.specific.SpecificDatumReader;
+import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.common.serialization.Deserializer;
 
 import java.util.Map;
 
 //https://medium.com/@mailshine/apache-avro-quick-example-in-kafka-7b2909396c02
-public class AvroGenericRecordDeserializer implements Deserializer {
+public class AvroGenericRecordDeserializer<T extends SpecificRecordBase> implements Deserializer {
     private Schema schema = null;
+    protected final Class<T> targetType;
+
+    public AvroGenericRecordDeserializer(Class<T> targetType) {
+        this.targetType = targetType;
+    }
 
     @Override
     public void configure(Map configs, boolean isKey) {
@@ -20,13 +27,13 @@ public class AvroGenericRecordDeserializer implements Deserializer {
     }
 
     @Override
-    public Object deserialize(String topic, byte[] bytes) {
-        GenericRecord result = null;
+    public T deserialize(String topic, byte[] bytes) {
+        T result = null;
         try {
             if (bytes != null) {
-                DatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
+                DatumReader<GenericRecord> datumReader = new SpecificDatumReader<>(schema);
                 Decoder decoder = DecoderFactory.get().binaryDecoder(bytes, null);
-                result = datumReader.read(null, decoder);
+                result = (T) datumReader.read(null, decoder);
             }
         } catch (Exception e) {
             e.printStackTrace();
