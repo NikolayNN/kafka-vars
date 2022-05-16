@@ -3,6 +3,7 @@ package by.aurorasoft.kafka.producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
+import org.springframework.ui.Model;
 import org.springframework.util.concurrent.ListenableFuture;
 
 import java.util.Collection;
@@ -19,16 +20,20 @@ public abstract class KafkaProducerAbstract<TOPIC_KEY, TOPIC_VALUE, TRANSPORTABL
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public abstract ListenableFuture<SendResult<TOPIC_KEY, TOPIC_VALUE>> send(MODEL model);
+    public abstract ListenableFuture<SendResult<TOPIC_KEY, TOPIC_VALUE>> sendGet(MODEL model);
+
+    public void send(MODEL model){
+        sendGet(model);
+    }
 
     protected abstract TRANSPORTABLE convertModelToTransportable(MODEL model);
 
     protected abstract TOPIC_VALUE convertTransportableToTopicValue(TRANSPORTABLE intermediate);
 
-    public List<ListenableFuture<SendResult<TOPIC_KEY, TOPIC_VALUE>>> send(Collection<MODEL> models){
+    public List<ListenableFuture<SendResult<TOPIC_KEY, TOPIC_VALUE>>> sendGet(Collection<MODEL> models){
         List<ListenableFuture<SendResult<TOPIC_KEY, TOPIC_VALUE>>> results = new LinkedList<>();
         for (MODEL model : models) {
-            results.add(this.send(model));
+            results.add(this.sendGet(model));
         }
         return results;
     }
