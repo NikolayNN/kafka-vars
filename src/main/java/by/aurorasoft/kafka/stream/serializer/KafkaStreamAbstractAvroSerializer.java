@@ -7,10 +7,11 @@ import java.util.Map;
 
 public abstract class KafkaStreamAbstractAvroSerializer extends AvroGenericRecordSerializer {
 
-    @Override
-    public void configure(Map<String, ?> arg0, boolean arg1) {
-        schema = this.createSchema();
+    public KafkaStreamAbstractAvroSerializer(Schema schema) {
+        this.schema = schema;
     }
 
-    protected abstract Schema createSchema();
+    @Override
+    public void configure(Map<String, ?> arg0, boolean arg1) {
+    }
 }

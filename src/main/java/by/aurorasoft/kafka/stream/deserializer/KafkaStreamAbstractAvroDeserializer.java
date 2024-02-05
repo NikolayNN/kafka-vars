@@ -7,10 +7,12 @@ import java.util.Map;
 
 public abstract class KafkaStreamAbstractAvroDeserializer extends AvroGenericRecordDeserializer {
 
-    @Override
-    public void configure(Map<String, ?> configs, boolean isKey) {
-        this.schema = createSchema();
+    public KafkaStreamAbstractAvroDeserializer(Schema schema) {
+        this.schema = schema;
     }
 
-    public abstract Schema createSchema();
+    @Override
+    public void configure(Map<String, ?> configs, boolean isKey) {
+    }
+
 }
