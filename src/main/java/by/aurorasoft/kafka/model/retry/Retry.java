@@ -13,10 +13,34 @@ import java.time.Instant;
  * This class is typically used in scenarios where an operation needs to be retried
  * multiple times, such as in network communications or remote service invocations.
  */
+@Getter
 public class Retry<T> {
-    Meta retryMeta;
-    ExceptionInfo exceptionInfo;
-    T obj;
+    private final T obj;
+    private final Meta retryMeta;
+    private ExceptionInfo exceptionInfo;
+
+    public Retry(int maxAttempts, T obj) {
+        this.retryMeta = new Meta(maxAttempts);
+        this.obj = obj;
+    }
+
+    /**
+     * Records a new attempt, incrementing the attempt count and updating the last attempt time.
+     */
+    public void recordAttempt(Exception e) {
+        retryMeta.recordAttempt();
+        exceptionInfo = new ExceptionInfo(e);
+    }
+
+    /**
+     * Determines if another retry attempt can be made.
+     *
+     * @return {@code true} if the current attempt count is less than the maximum attempts;
+     * {@code false} otherwise.
+     */
+    public boolean canRetry() {
+        return retryMeta.attemptCount < retryMeta.maxAttempts;
+    }
 
     @Getter
     @ToString
@@ -46,7 +70,7 @@ public class Retry<T> {
          * Determines if another retry attempt can be made.
          *
          * @return {@code true} if the current attempt count is less than the maximum attempts;
-         *         {@code false} otherwise.
+         * {@code false} otherwise.
          */
         public boolean canRetry() {
             return attemptCount < maxAttempts;
