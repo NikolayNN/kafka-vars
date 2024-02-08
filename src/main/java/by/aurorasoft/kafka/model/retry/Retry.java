@@ -27,7 +27,7 @@ public class Retry<T> {
     /**
      * Records a new attempt, incrementing the attempt count and updating the last attempt time.
      */
-    public void recordAttempt(Exception e) {
+    public void recordAttempt(Throwable e) {
         retryMeta.recordAttempt();
         exceptionInfo = new ExceptionInfo(e);
     }

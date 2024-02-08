@@ -9,7 +9,7 @@ public class ExceptionInfo {
     String rootCauseMessage;
     String rootCauseClass;
 
-    public ExceptionInfo(Exception e) {
+    public ExceptionInfo(Throwable e) {
         this.message = e.getMessage();
         this.exceptionClass = e.getClass().getName();
         Throwable rootCause = findRootCause(e);
