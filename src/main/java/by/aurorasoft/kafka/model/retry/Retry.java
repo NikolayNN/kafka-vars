@@ -1,6 +1,7 @@
 package by.aurorasoft.kafka.model.retry;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -40,16 +41,19 @@ public class Retry<T> implements Retryable {
     }
 
     @Override
+    @JsonIgnore
     public boolean isMaxAttemptsReached() {
         return retryMeta.isMaxAttemptsReached();
     }
 
     @Override
+    @JsonIgnore
     public boolean hasTimeoutPassed() {
         return retryMeta.hasTimeoutPassed();
     }
 
     @Override
+    @JsonIgnore
     public Status evaluateRetryStatus() {
         return retryMeta.evaluateRetryStatus();
     }
@@ -129,6 +133,7 @@ public class Retry<T> implements Retryable {
          * @see Retryable#isMaxAttemptsReached();
          */
         @Override
+        @JsonIgnore
         public boolean isMaxAttemptsReached() {
             return attemptCount >= maxAttempts;
         }
@@ -137,6 +142,7 @@ public class Retry<T> implements Retryable {
          * @see Retryable#hasTimeoutPassed();
          */
         @Override
+        @JsonIgnore
         public boolean hasTimeoutPassed() {
             Duration timeSinceLastAttempt = Duration.between(lastAttemptTime, Instant.now());
             return timeSinceLastAttempt.compareTo(attemptTimeout) >= 0;
@@ -146,6 +152,7 @@ public class Retry<T> implements Retryable {
          * @see Retryable#evaluateRetryStatus();
          */
         @Override
+        @JsonIgnore
         public Status evaluateRetryStatus() {
             if (isMaxAttemptsReached()) {
                 return Status.MAX_ATTEMPTS_REACHED;
