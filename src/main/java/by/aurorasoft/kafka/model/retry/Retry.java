@@ -4,23 +4,18 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.time.Duration;
 import java.time.Instant;
 
-/**
- * The {@code Meta} class represents metadata for tracking retry attempts.
- * It includes information such as the number of attempts made, the time of the last attempt,
- * the maximum number of attempts allowed, and the time of the first attempt.
- * This class is typically used in scenarios where an operation needs to be retried
- * multiple times, such as in network communications or remote service invocations.
- */
+
 @Getter
-public class Retry<T> {
+public class Retry<T> implements Retryable {
     private final T obj;
     private final Meta retryMeta;
     private ExceptionInfo exceptionInfo;
 
-    public Retry(int maxAttempts, T obj) {
-        this.retryMeta = new Meta(maxAttempts);
+    public Retry(int maxAttempts, Duration attemptTimeout, T obj) {
+        this.retryMeta = new Meta(maxAttempts, attemptTimeout);
         this.obj = obj;
     }
 
@@ -32,27 +27,66 @@ public class Retry<T> {
         exceptionInfo = new ExceptionInfo(e);
     }
 
-    /**
-     * Determines if another retry attempt can be made.
-     *
-     * @return {@code true} if the current attempt count is less than the maximum attempts;
-     * {@code false} otherwise.
-     */
-    public boolean canRetry() {
-        return retryMeta.attemptCount < retryMeta.maxAttempts;
+    @Override
+    public boolean isMaxAttemptsReached() {
+        return retryMeta.isMaxAttemptsReached();
     }
 
+    @Override
+    public boolean hasTimeoutPassed() {
+        return retryMeta.hasTimeoutPassed();
+    }
+
+    @Override
+    public Status evaluateRetryStatus() {
+        return retryMeta.evaluateRetryStatus();
+    }
+
+
+    /**
+     * Represents the metadata associated with retry attempts for a specific operation.
+     * This class tracks the number of attempts made, the timestamp of the last attempt,
+     * and determines whether additional attempts can be made based on the configured
+     * maximum number of attempts and the timeout duration between attempts.
+     * <p>
+     * The {@code attemptTimeout} ensures that retries are not made too frequently,
+     * allowing for a cooldown period between attempts. The {@code maxAttempts} limits
+     * the total number of retries to prevent infinite retry loops.
+     * </p>
+     */
     @Getter
     @ToString
     @EqualsAndHashCode
-    public static class Meta {
+    public static class Meta implements Retryable {
+
+        /**
+         * The current number of retry attempts that have been made.
+         */
         private int attemptCount;
+
+        /**
+         * The timestamp of the last retry attempt.
+         */
         private Instant lastAttemptTime;
+
+        /**
+         * The maximum number of retry attempts allowed.
+         */
         private final int maxAttempts;
+
+        /**
+         * The duration to wait before making another retry attempt.
+         */
+        private final Duration attemptTimeout;
+
+        /**
+         * The timestamp of the first retry attempt.
+         */
         private final Instant firstAttemptTime;
 
-        public Meta(int maxAttempts) {
+        public Meta(int maxAttempts, Duration attemptTimeout) {
             this.attemptCount = 0;
+            this.attemptTimeout = attemptTimeout;
             this.maxAttempts = maxAttempts;
             this.lastAttemptTime = Instant.now();
             this.firstAttemptTime = Instant.now();
@@ -67,14 +101,41 @@ public class Retry<T> {
         }
 
         /**
-         * Determines if another retry attempt can be made.
-         *
-         * @return {@code true} if the current attempt count is less than the maximum attempts;
-         * {@code false} otherwise.
+         * @see Retryable#isMaxAttemptsReached();
          */
-        public boolean canRetry() {
-            return attemptCount < maxAttempts;
+        @Override
+        public boolean isMaxAttemptsReached() {
+            return attemptCount >= maxAttempts;
         }
+
+        /**
+         * @see Retryable#hasTimeoutPassed();
+         */
+        @Override
+        public boolean hasTimeoutPassed() {
+            Duration timeSinceLastAttempt = Duration.between(lastAttemptTime, Instant.now());
+            return timeSinceLastAttempt.compareTo(attemptTimeout) >= 0;
+        }
+
+        /**
+         * @see Retryable#evaluateRetryStatus();
+         */
+        @Override
+        public Status evaluateRetryStatus() {
+            if (isMaxAttemptsReached()) {
+                return Status.MAX_ATTEMPTS_REACHED;
+            }
+            if (!hasTimeoutPassed()) {
+                return Status.WAITING_FOR_TIMEOUT;
+            }
+            return Status.READY_TO_RETRY;
+        }
+    }
+
+    public enum Status {
+        READY_TO_RETRY,
+        WAITING_FOR_TIMEOUT,
+        MAX_ATTEMPTS_REACHED
     }
 }
 
