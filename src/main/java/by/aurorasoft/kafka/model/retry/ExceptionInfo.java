@@ -1,8 +1,10 @@
 package by.aurorasoft.kafka.model.retry;
 
+import lombok.AllArgsConstructor;
 import lombok.Value;
 
 @Value
+@AllArgsConstructor
 public class ExceptionInfo {
     String message;
     String exceptionClass;

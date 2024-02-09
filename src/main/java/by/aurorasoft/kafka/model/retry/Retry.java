@@ -1,5 +1,6 @@
 package by.aurorasoft.kafka.model.retry;
 
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -9,6 +10,7 @@ import java.time.Instant;
 
 
 @Getter
+@AllArgsConstructor
 public class Retry<T> implements Retryable {
     private final T obj;
     private final Meta retryMeta;
@@ -57,6 +59,7 @@ public class Retry<T> implements Retryable {
     @Getter
     @ToString
     @EqualsAndHashCode
+    @AllArgsConstructor
     public static class Meta implements Retryable {
 
         /**
