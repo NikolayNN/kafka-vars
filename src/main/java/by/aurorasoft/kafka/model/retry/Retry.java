@@ -1,6 +1,7 @@
 package by.aurorasoft.kafka.model.retry;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -22,7 +23,9 @@ public class Retry<T> implements Retryable {
     }
 
     @JsonCreator
-    public Retry(T obj, Meta retryMeta, ExceptionInfo exceptionInfo) {
+    public Retry(@JsonProperty("obj") T obj,
+                 @JsonProperty("retryMeta") Meta retryMeta,
+                 @JsonProperty("exceptionInfo") ExceptionInfo exceptionInfo) {
         this.obj = obj;
         this.retryMeta = retryMeta;
         this.exceptionInfo = exceptionInfo;
@@ -102,7 +105,11 @@ public class Retry<T> implements Retryable {
         }
 
         @JsonCreator
-        public Meta(int attemptCount, Instant lastAttemptTime, int maxAttempts, Duration attemptTimeout, Instant firstAttemptTime) {
+        public Meta(@JsonProperty("attemptCount") int attemptCount,
+                    @JsonProperty("lastAttemptTime") Instant lastAttemptTime,
+                    @JsonProperty("maxAttempts") int maxAttempts,
+                    @JsonProperty("attemptTimeout") Duration attemptTimeout,
+                    @JsonProperty("firstAttemptTime") Instant firstAttemptTime) {
             this.attemptCount = attemptCount;
             this.lastAttemptTime = lastAttemptTime;
             this.maxAttempts = maxAttempts;

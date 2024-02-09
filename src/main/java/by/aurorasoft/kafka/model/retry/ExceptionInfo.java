@@ -1,6 +1,7 @@
 package by.aurorasoft.kafka.model.retry;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
 
 @Value
@@ -19,7 +20,10 @@ public class ExceptionInfo {
     }
 
     @JsonCreator
-    public ExceptionInfo(String message, String exceptionClass, String rootCauseMessage, String rootCauseClass) {
+    public ExceptionInfo(@JsonProperty("message") String message,
+                         @JsonProperty("exceptionClass") String exceptionClass,
+                         @JsonProperty("rootCauseMessage") String rootCauseMessage,
+                         @JsonProperty("rootCauseClass") String rootCauseClass) {
         this.message = message;
         this.exceptionClass = exceptionClass;
         this.rootCauseMessage = rootCauseMessage;
