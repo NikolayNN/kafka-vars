@@ -1,10 +1,9 @@
 package by.aurorasoft.kafka.model.retry;
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Value;
 
 @Value
-@AllArgsConstructor
 public class ExceptionInfo {
     String message;
     String exceptionClass;
@@ -17,6 +16,14 @@ public class ExceptionInfo {
         Throwable rootCause = findRootCause(e);
         this.rootCauseMessage = rootCause.getMessage();
         this.rootCauseClass = rootCause.getClass().getName();
+    }
+
+    @JsonCreator
+    public ExceptionInfo(String message, String exceptionClass, String rootCauseMessage, String rootCauseClass) {
+        this.message = message;
+        this.exceptionClass = exceptionClass;
+        this.rootCauseMessage = rootCauseMessage;
+        this.rootCauseClass = rootCauseClass;
     }
 
     private Throwable findRootCause(Throwable e) {
