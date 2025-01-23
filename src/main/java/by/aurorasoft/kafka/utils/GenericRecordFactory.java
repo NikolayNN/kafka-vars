@@ -10,6 +10,11 @@ public class GenericRecordFactory {
         GenericRecord record = new GenericData.Record(schema);
         for (Schema.Field field : schema.getFields()) {
             Object fieldValue = ReflectData.get().getField(obj, field.name(), field.pos());
+
+            if (field.schema().getType() == Schema.Type.ENUM) {
+                fieldValue = new GenericData.EnumSymbol(field.schema(), fieldValue.toString());
+            }
+
             record.put(field.name(), fieldValue);
         }
         return record;
