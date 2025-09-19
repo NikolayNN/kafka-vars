@@ -35,10 +35,10 @@ public class KafkaTopicFactory {
             config.put(TopicConfig.RETENTION_MS_CONFIG, String.valueOf(retentionDays));
         }
         if (retentionGb > 0) {
-            config.put(TopicConfig.RETENTION_MS_CONFIG, String.valueOf(retentionGb * BYTES_GB));
+            config.put(TopicConfig.RETENTION_BYTES_CONFIG, String.valueOf(retentionGb * BYTES_GB));
         }
         if (retentionGb == -1) {
-            config.put(TopicConfig.RETENTION_MS_CONFIG, String.valueOf(retentionGb));
+            config.put(TopicConfig.RETENTION_BYTES_CONFIG, String.valueOf(retentionGb));
         }
         return topic.configs(config);
     }
