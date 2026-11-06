@@ -5,7 +5,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
 import lombok.experimental.FieldNameConstants;
+import org.apache.avro.reflect.AvroDefault;
 import org.apache.avro.reflect.Nullable;
+
+import java.util.Collections;
+import java.util.Map;
 
 @Value
 @FieldNameConstants
@@ -13,7 +17,9 @@ public class MessageTransportable {
 
     @Nullable
     Long id;
-    /** seconds */
+    /**
+     * seconds
+     */
     long time;
     float latitude;
     float longitude;
@@ -63,9 +69,40 @@ public class MessageTransportable {
     float ecoBump;
 
     String params;
+    @AvroDefault("{}")
+    Map<String, String> strParams;
     long unitId;
     boolean isArchive;
     MessageType type;
+
+    public MessageTransportable(
+            Long id,
+            long time,
+            float latitude,
+            float longitude,
+            int altitude,
+            int speed,
+            int amountSatellite,
+            int course,
+            double gpsOdometer,
+            int gsmStrength,
+            int battery,
+            int batteryVoltage,
+            float onboardVoltage,
+            float ecoAcceleration,
+            float ecoBraking,
+            float ecoCornering,
+            float ecoBump,
+            String params,
+            long unitId,
+            boolean isArchive,
+            MessageType type
+    ) {
+        this(id, time, latitude, longitude, altitude, speed, amountSatellite, course,
+                gpsOdometer, gsmStrength, battery, batteryVoltage, onboardVoltage,
+                ecoAcceleration, ecoBraking, ecoCornering, ecoBump, params,
+                Collections.emptyMap(), unitId, isArchive, type);
+    }
 
     @JsonCreator
     public MessageTransportable(
@@ -87,6 +124,7 @@ public class MessageTransportable {
             @JsonProperty("ecoCornering") float ecoCornering,
             @JsonProperty("ecoBump") float ecoBump,
             @JsonProperty("params") String params,
+            @JsonProperty("strParams") Map<String, String> strParams,
             @JsonProperty("unitId") long unitId,
             @JsonProperty("isArchive") boolean isArchive,
             @JsonProperty("type") MessageType type
@@ -109,6 +147,7 @@ public class MessageTransportable {
         this.ecoCornering = ecoCornering;
         this.ecoBump = ecoBump;
         this.params = params;
+        this.strParams = strParams == null ? Collections.emptyMap() : strParams;
         this.unitId = unitId;
         this.isArchive = isArchive;
         this.type = type;
