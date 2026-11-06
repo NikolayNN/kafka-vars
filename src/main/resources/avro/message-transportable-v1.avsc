@@ -1,0 +1,33 @@
+{
+  "type": "record",
+  "name": "MessageTransportable",
+  "namespace": "by.aurorasoft.kafka.model",
+  "fields": [
+    {"name": "altitude", "type": "int"},
+    {"name": "amountSatellite", "type": "int"},
+    {"name": "battery", "type": "int"},
+    {"name": "batteryVoltage", "type": "int"},
+    {"name": "course", "type": "int"},
+    {"name": "ecoAcceleration", "type": "float"},
+    {"name": "ecoBraking", "type": "float"},
+    {"name": "ecoBump", "type": "float"},
+    {"name": "ecoCornering", "type": "float"},
+    {"name": "gpsOdometer", "type": "double"},
+    {"name": "gsmStrength", "type": "int"},
+    {"name": "id", "type": ["null", "long"], "default": null},
+    {"name": "isArchive", "type": "boolean"},
+    {"name": "latitude", "type": "float"},
+    {"name": "longitude", "type": "float"},
+    {"name": "onboardVoltage", "type": "float"},
+    {"name": "params", "type": "string"},
+    {"name": "speed", "type": "int"},
+    {"name": "time", "type": "long"},
+    {"name": "type", "type": {
+      "type": "enum",
+      "name": "MessageType",
+      "namespace": "by.nhorushko.aurutils.message",
+      "symbols": ["ERROR", "WRONG_ORDER", "INCORRECT", "CORRECT", "VALID"]
+    }},
+    {"name": "unitId", "type": "long"}
+  ]
+}
